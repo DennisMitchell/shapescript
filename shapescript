@@ -4,45 +4,57 @@ import fileinput, sys
 
 def interpret(code):
   global stack
-  stringing = 0
 
-  for char in code:
-    quote = 1 + '\'\"'.find(char)
-
-    if quote or stringing:
-      if not stringing:
-        string = ''
-        stringing = quote
-      elif stringing == quote:
-        stack.append(string)
-        stringing = 0
-      else:
-        string += char
-    elif char in '0123456789':
-      stack.append(int(char))
+  tail_call = True
+ 
+  while tail_call:
+    if code[-1] == '!':
+      code = code[:-1]
     else:
-      x = stack.pop()
+      tail_call = False
 
-      if char == "!":
-        interpret(x)
-      else:
-        if char == "?":
-          y = stack[~x]
-        elif char == '_':
-          y = len(x)
+    stringing = 0
+
+    for char in code:
+      quote = 1 + '\'\"'.find(char)
+
+      if quote or stringing:
+        if not stringing:
+          string = ''
+          stringing = quote
+        elif stringing == quote:
+          stack.append(string)
+          stringing = 0
         else:
-          y = stack.pop()
+          string += char
+      elif char in '0123456789':
+        stack.append(int(char))
+      else:
+        x = stack.pop()
 
-          if char == "@":
-            stack.append(x)
-          elif char == "$":
-            y = y.split(x)
-          elif char == "~":
-            y = x.join(map(str, y))
+        if char == "!":
+          interpret(x)
+        else:
+          if char == "?":
+            y = stack[~x]
+          elif char == '_':
+            y = len(x)
           else:
-            y = eval(repr(y) + char + repr(x))
+            y = stack.pop()
 
-        stack.append(y)
+            if char == "@":
+              stack.append(x)
+            elif char == "$":
+              y = y.split(x)
+            elif char == "~":
+              y = x.join(map(str, y))
+            else:
+              y = eval(repr(y) + char + repr(x))
+
+          stack.append(y)
+
+    if tail_call:
+      code = stack.pop()
 
 source = ''
 
