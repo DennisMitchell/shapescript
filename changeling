@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+
+import shapescript, sys
+
+def error(adjective):
+	print('This shape is %s.' % adjective)
+	exit(1)
+
+try:
+	changeling = open(sys.argv[1]).read().split('\n')
+except IndexError:
+	print('Syntax: %s source-file' % argv[0], file = sys.stderr)
+	exit(1)
+
+if changeling.pop() != '' or any(len(line) != len(changeling) for line in changeling):
+	error('unpleasant')
+
+source = ''
+
+for line in changeling:
+	if not line or min(line) < ' ' or max(line) > '~':
+		error('unpleasant')
+
+	accumulator = 0
+
+	for char in line + '\n':
+		value = ord(char)
+
+		try:
+			source += chr(value ^ (accumulator >> 1))
+		except:
+			error('unpleasant')
+
+		accumulator += value - 32
+
+try:
+	for item in shapescript.interpret(source):
+		print(item, end = '')
+except SyntaxError:
+	error('unpurposed')
+except:
+	error('inadequate')

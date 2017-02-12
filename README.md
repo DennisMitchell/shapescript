@@ -29,3 +29,29 @@ ShapeScript is a stack-based language with a relatively simple syntax. Unsurpris
   In the last case, since the result is not valid Python, a runtime error occurs.
 
 Before executing the code, the interpreter will place the entire user input (if present) in form of a string on the stack. After executing the source code, the interpreter will print all items on the stack.
+
+# Changeling
+
+Changeling is a particularly cumbersome encoding of ShapeScript. It was created as a submission to the programming contest [Create a programming language that only appears to be unusable][contest], which it won. The syntax of the original submission was slightly different: it used `&` instead of  `~` for string joining, which is easier to incorporate into the Changeling encoding but also deprives ShapeScript of the bitwise AND operator.
+
+A Changeling program must obey the following rules.
+
+* All lines must have the same number of characters.
+
+* All lines must consist of printable ASCII characters, followed by a single linefeed.
+
+* The number of lines must match the number of printable characters per line.
+
+It will generate a certain ShapeScript program – which isn't necessarily useful or even syntactically valid – as follows.
+
+* Initially, there is no source code.
+
+* For each line the following happens.
+
+  * The accumulator is set to zero.
+
+  * For each character **c** of the line (including the trailing linefeed), the code point of **c** is XORed with the accumulator divided by **2**, and the Unicode character that corresponds to the resulting code point is appended to the source code. Then, the difference between the code point of **c** and the integer **32** is added to the accumulator, and the next character of the line (if any) is processed.
+
+If any part of the above fails, an error is raised. After all lines have been processed, the resulting ShapeScript program is executed as usual.
+
+[contest]: http://codegolf.stackexchange.com/a/62064/12012 "Create a programming language that only appears to be unusable - Programming Puzzles & Code Golf Stack Exchange"
